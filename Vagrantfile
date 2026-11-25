@@ -6,6 +6,9 @@ ENV['VAGRANT_SERVER_URL'] = 'https://vagrant.elab.pro'
 
 Vagrant.configure("2") do |config|
 config.vm.provision "shell", inline: <<-SHELL
+  echo '192.168.57.10 ipa.otus.lan ipa' | sudo tee -a /etc/hosts
+  echo '192.168.57.11 client1.otus.lan client1' | sudo tee -a /etc/hosts
+  echo '192.168.57.12 client2.otus.lan client2' | sudo tee -a /etc/hosts
   echo 'vagrant:vagrant' | sudo chpasswd
   sudo sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
   sudo systemctl restart sshd
