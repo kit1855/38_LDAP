@@ -34,7 +34,22 @@
         ansible_password: vagrant
         ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
 
+- name: Заполнить known_hosts
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Добавить ключ хоста ipa в known_hosts
+      ansible.builtin.known_hosts:
+        name: ipa.otus.lan
+        key: "{{ lookup('pipe', 'ssh-keyscan -t ed25519 ipa.otus.lan 2>/dev/null') }}"
+        state: present
 
+    - name: Добавить ключ хоста client1 в known_hosts
+      ansible.builtin.known_hosts:
+        name: client1.otus.lan
+        key: "{{ lookup('pipe', 'ssh-keyscan -t ed25519 client1.otus.lan 2>/dev/null') }}"
+        state: present
 
 - name: Configure IPA server
   hosts: ipaserver
