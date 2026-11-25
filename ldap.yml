@@ -1,3 +1,41 @@
+- name: Подготовка SSH-ключа для Ansible на control node (client2)
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Установить коллекции community.crypto и ansible.posix
+      ansible.builtin.command:
+        cmd: ansible-galaxy collection install community.crypto ansible.posix
+      changed_when: false
+
+    - name: Сгенерировать выделенный SSH-ключ для Ansible
+      community.crypto.openssh_keypair:
+        path: /home/vagrant/.ssh/ansible_key
+        type: ed25519
+        force: false
+      register: key_result
+
+    - name: Прочитать публичный ключ
+      ansible.builtin.slurp:
+        src: /home/vagrant/.ssh/ansible_key.pub
+      register: pub_key
+
+    - name: Разложить публичный ключ на ipa и client1 (через пароль)
+      ansible.posix.authorized_key:
+        user: vagrant
+        key: "{{ pub_key.content | b64decode }}"
+        state: present
+      delegate_to: "{{ item }}"
+      loop:
+        - ipa.otus.lan
+        - client1.otus.lan
+      vars:
+        ansible_user: vagrant
+        ansible_password: vagrant
+        ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+
+
+
 - name: Configure IPA server
   hosts: ipaserver
   # задачи для сервера
