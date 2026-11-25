@@ -1,0 +1,5 @@
+[ipaserver]
+ipa.otus.lan ansible_host=192.168.57.10 ansible_user=vagrant ansible_ssh_private_key_file=/home/vagrant/.ssh/ansible_key
+
+[ipaclients]
+client1.otus.lan ansible_host=192.168.57.11 ansible_user=vagrant ansible_ssh_private_key_file=/home/vagrant/.ssh/ansible_key
