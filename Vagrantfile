@@ -5,6 +5,11 @@
 ENV['VAGRANT_SERVER_URL'] = 'https://vagrant.elab.pro'
 
 Vagrant.configure("2") do |config|
+config.vm.provision "shell", inline: <<-SHELL
+  echo 'vagrant:vagrant' | sudo chpasswd
+  sudo sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
+  sudo systemctl restart sshd
+SHELL
 
 # 1. ipa.otus.lan * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
   config.vm.define "ipa" do |ipa|
@@ -58,9 +63,17 @@ Vagrant.configure("2") do |config|
     client2.vm.provision "shell",
       run: "always",
       inline: <<-SHELL
+        sudo dnf install -y sshpass 
         sudo nmcli con reload
         sudo nmcli con up 'System eth1'
       SHELL
+
+    client2.vm.provision "ansible_local" do |ansible|
+      ansible.playbook = "ldap.yml"
+      ansible.inventory_path = "hosts.ini"
+      ansible.limit = "all"
+      ansible.install = true
+    end
   end
 
 end
