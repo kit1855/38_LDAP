@@ -12,6 +12,7 @@ config.vm.provision "shell", inline: <<-SHELL
   echo 'vagrant:vagrant' | sudo chpasswd
   sudo sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
   sudo systemctl restart sshd
+  sudo setenforce 0
 SHELL
 
 # 1. ipa.otus.lan * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
