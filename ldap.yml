@@ -1,0 +1,38 @@
+
+
+
+
+
+# это окончание плэйбука. Эта часть возвращает возможность подключения к ВМ по SSH
+- name: Отключить аутентификацию по паролю SSH и обеспечить безопасность
+  hosts: ipaserver:ipaclients
+  become: true
+  tasks:
+    - name: Отключить аутентификацию по паролю в основном конфигурационном файле
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PasswordAuthentication'
+        line: 'PasswordAuthentication no'
+        validate: /usr/sbin/sshd -t -f %s
+      notify: restart sshd
+
+    - name: Удалить возможные конфликтующие конфигурации в sshd_config.d
+      ansible.builtin.find:
+        paths: /etc/ssh/sshd_config.d
+        patterns: "*.conf"
+        file_type: file
+      register: sshd_dropins
+
+    - name: Удалить настройки, разрешающие вход по паролю, из всех drop-in файлов
+      ansible.builtin.lineinfile:
+        path: "{{ item.path }}"
+        regexp: '(?i)^(?!#).*PasswordAuthentication.*yes'
+        state: absent
+      loop: "{{ sshd_dropins.files }}"
+      notify: restart sshd
+
+  handlers:
+    - name: restart sshd
+      ansible.builtin.service:
+        name: sshd
+        state: restarted
