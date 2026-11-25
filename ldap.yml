@@ -1,4 +1,10 @@
+- name: Configure IPA server
+  hosts: ipaserver
+  # задачи для сервера
 
+- name: Configure IPA clients
+  hosts: ipaclients
+  # задачи для клиентов
 
 
 
