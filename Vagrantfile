@@ -20,9 +20,6 @@ Vagrant.configure("2") do |config|
     ipa.vm.provision "shell",
       run: "always",
       inline: <<-SHELL
-        # sudo dnf install -y iptables-services
-        # sudo systemctl enable iptables
-        # sudo iptables-save | sudo tee /etc/sysconfig/iptables
         sudo nmcli con reload
         sudo nmcli con up 'System eth1'
       SHELL
@@ -42,9 +39,6 @@ Vagrant.configure("2") do |config|
     client1.vm.provision "shell",
       run: "always",
       inline: <<-SHELL
-        # sudo dnf install -y iptables-services
-        # sudo systemctl enable iptables
-        # sudo iptables-save | sudo tee /etc/sysconfig/iptables
         sudo nmcli con reload
         sudo nmcli con up 'System eth1'
       SHELL
@@ -64,9 +58,6 @@ Vagrant.configure("2") do |config|
     client2.vm.provision "shell",
       run: "always",
       inline: <<-SHELL
-        # sudo dnf install -y iptables-services
-        # sudo systemctl enable iptables
-        # sudo iptables-save | sudo tee /etc/sysconfig/iptables
         sudo nmcli con reload
         sudo nmcli con up 'System eth1'
       SHELL
