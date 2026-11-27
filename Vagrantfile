@@ -67,7 +67,6 @@ SHELL
     client2.vm.provision "shell",
       run: "always",
       inline: <<-SHELL
-        sudo dnf install -y sshpass 
         sudo nmcli con reload
         sudo nmcli con up 'System eth1'
       SHELL
