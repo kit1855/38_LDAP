@@ -20,7 +20,7 @@ SHELL
     ipa.vm.box = "almalinux/9"
     ipa.vm.hostname = "ipa.otus.lan"
     ipa.vm.provider "virtualbox" do |v|
-      v.memory = 2048
+      v.memory = 8192
       v.cpus = 2
     end
 
