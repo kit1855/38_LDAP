@@ -19,12 +19,6 @@
         state: started
         enabled: true
 
-    - name: Отключить firewalld (основное задание)
-      ansible.builtin.service:
-        name: firewalld
-        state: stopped
-        enabled: false
-
     - name: Установить модуль idm:DL1
       ansible.builtin.dnf:
         name: "@idm:DL1"
