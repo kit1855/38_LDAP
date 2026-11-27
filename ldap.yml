@@ -1,7 +1,84 @@
+---
 - name: Configure IPA server
   hosts: ipaserver
-  # задачи для сервера
+  become: true
+  tasks:
+    - name: Установить часовой пояс Europe/Moscow
+      ansible.builtin.command:
+        cmd: timedatectl set-timezone Europe/Moscow
+      changed_when: false
+
+    - name: Установить chrony
+      ansible.builtin.dnf:
+        name: chrony
+        state: present
+
+    - name: Запустить и включить chronyd
+      ansible.builtin.service:
+        name: chronyd
+        state: started
+        enabled: true
+
+    - name: Отключить firewalld (основное задание)
+      ansible.builtin.service:
+        name: firewalld
+        state: stopped
+        enabled: false
+
+    - name: Установить модуль idm:DL1
+      ansible.builtin.dnf:
+        name: "@idm:DL1"
+        state: present
+
+    - name: Установить ipa-server
+      ansible.builtin.dnf:
+        name: ipa-server
+        state: present
+
+    - name: Установить FreeIPA сервер (неинтерактивно)
+      ansible.builtin.command:
+        cmd: >
+          ipa-server-install
+          --unattended
+          --domain=otus.lan
+          --realm=OTUS.LAN
+          --ds-password=otus2022
+          --admin-password=otus2022
+          --no-ntp
+          --no-dns
+      args:
+        creates: /etc/ipa/default.conf
 
 - name: Configure IPA clients
   hosts: ipaclients
-  # задачи для клиентов
+  become: true
+  tasks:
+    - name: Установить chrony
+      ansible.builtin.dnf:
+        name: chrony
+        state: present
+
+    - name: Запустить и включить chronyd
+      ansible.builtin.service:
+        name: chronyd
+        state: started
+        enabled: true
+
+    - name: Установить freeipa-client
+      ansible.builtin.dnf:
+        name: freeipa-client
+        state: present
+
+    - name: Подключить клиента к FreeIPA
+      ansible.builtin.command:
+        cmd: >
+          ipa-client-install
+          --unattended
+          --mkhomedir
+          --domain=OTUS.LAN
+          --server=ipa.otus.lan
+          --no-ntp
+          -p admin
+          -w otus2022
+      args:
+        creates: /etc/ipa/default.conf
