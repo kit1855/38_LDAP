@@ -19,11 +19,6 @@
         state: started
         enabled: true
 
-    - name: Установить модуль idm:DL1
-      ansible.builtin.dnf:
-        name: "@idm:DL1"
-        state: present
-
     - name: Установить ipa-server
       ansible.builtin.dnf:
         name: ipa-server
