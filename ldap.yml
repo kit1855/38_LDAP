@@ -34,7 +34,6 @@
           --ds-password=otus2022
           --admin-password=otus2022
           --no-ntp
-          --no-dns
       args:
         creates: /etc/ipa/default.conf
 
